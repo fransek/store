@@ -1,7 +1,9 @@
 import { useSyncExternalStore } from "react";
 
 export type Store<TState extends object, TActions extends object> = {
-    getState: () => TState;
+    get: () => TState;
+    set: (setter: Setter<TState>) => TState;
+    reset: () => void;
     subscribe: (listener: () => void) => () => void;
     actions: TActions;
 };
@@ -10,9 +12,12 @@ export type Setter<TState extends object> =
     | Partial<TState>
     | ((state: TState) => Partial<TState>);
 
-export const createStore = <TState extends object, TActions extends object>(
+export const createStore = <
+    TState extends object,
+    TActions extends object = Record<never, never>,
+>(
     initialState: TState,
-    generateActions: (
+    createActions?: (
         set: (setter: Setter<TState>) => TState,
         get: () => TState,
     ) => TActions,
@@ -20,14 +25,21 @@ export const createStore = <TState extends object, TActions extends object>(
     let state = initialState;
     let listeners: (() => void)[] = [];
 
-    const setState = (setter: Setter<TState>) => {
+    const dispatch = () => listeners.forEach((listener) => listener());
+
+    const get = () => state;
+
+    const set = (setter: Setter<TState>) => {
         const newState = typeof setter === "function" ? setter(state) : setter;
         state = { ...state, ...newState };
-        listeners.forEach((listener) => listener());
+        dispatch();
         return state;
     };
 
-    const getState = () => state;
+    const reset = () => {
+        state = initialState;
+        dispatch();
+    };
 
     const subscribe = (listener: () => void) => {
         listeners.push(listener);
@@ -36,16 +48,18 @@ export const createStore = <TState extends object, TActions extends object>(
         };
     };
 
-    const actions = generateActions(setState, getState);
+    const actions = createActions ? createActions(set, get) : ({} as TActions);
 
-    return { getState, subscribe, actions };
+    return { get, set, reset, subscribe, actions };
 };
 
 export const useStore = <TState extends object, TActions extends object>({
-    actions,
-    getState,
+    get,
+    set,
+    reset,
     subscribe,
+    actions,
 }: Store<TState, TActions>) => {
-    const state = useSyncExternalStore(subscribe, getState, getState);
-    return { state, actions };
+    const state = useSyncExternalStore(subscribe, get);
+    return { state, actions, set, reset };
 };
