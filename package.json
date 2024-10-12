@@ -1,6 +1,6 @@
 {
     "name": "@fransekman/store",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "",
     "main": "dist/index.js",
     "scripts": {
@@ -8,7 +8,13 @@
         "watch": "tsc --watch",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "keywords": [],
+    "keywords": [
+        "store",
+        "state",
+        "react",
+        "reducer",
+        "redux"
+    ],
     "author": "",
     "license": "ISC",
     "devDependencies": {
