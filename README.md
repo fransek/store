@@ -165,7 +165,7 @@ export const TodoStoreProvider: FC<{
 
 ```tsx
 // Count.tsx
-import { createStore, useStore } from "store";
+import { createStore, useStore } from "@fransekman/store";
 import React from "react";
 
 export const countStore = createStore({ count: 0 });
@@ -175,8 +175,16 @@ export const Count = () => {
     return (
         <div>
             <div>Count: {state.count}</div>
-            <button onClick={() => set({ count: state.count + 1 })}>+</button>
-            <button onClick={() => set({ count: state.count - 1 })}>-</button>
+            <button
+                onClick={() => set((state) => ({ count: state.count + 1 }))}
+            >
+                +
+            </button>
+            <button
+                onClick={() => set((state) => ({ count: state.count - 1 }))}
+            >
+                -
+            </button>
             <button onClick={reset}>Reset</button>
         </div>
     );
