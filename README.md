@@ -1,12 +1,19 @@
 # @fransekman/store
 
-A simple and lightweight state management library for React.
+A tiny state management library for React.
 
-## Example usage
+## Getting started
 
-1. Create the store
+1. Install the package:
+
+```sh
+npm i @fransekman/store
+```
+
+2. Create a store:
 
 ```ts
+// todoStore.ts
 import { createStore, useStore } from "@fransekman/store";
 
 type Todo = {
@@ -14,7 +21,7 @@ type Todo = {
     completed: boolean;
 };
 
-export interface TodoState {
+interface TodoState {
     input: string;
     todos: Todo[];
 }
@@ -24,7 +31,7 @@ const initialState: TodoState = {
     todos: [],
 };
 
-export const todoStore = createStore(initialState, (set) => ({
+const todoStore = createStore(initialState, (set) => ({
     setInput: (input: string) => set({ input }),
     addTodo: (text: string) =>
         set((state) => {
@@ -47,9 +54,10 @@ export const todoStore = createStore(initialState, (set) => ({
 export const useTodoStore = () => useStore(todoStore);
 ```
 
-2. Use the store
+3. Use the store:
 
 ```tsx
+// Todos.tsx
 import { useTodoStore } from "./todoStore";
 
 export const Todos = () => {
@@ -63,9 +71,7 @@ export const Todos = () => {
                 value={state.input}
                 onChange={(e) => actions.setInput(e.target.value)}
             />
-            <button onClick={() => actions.addTodo(state.input)}>
-                Add Todo
-            </button>
+            <button onClick={() => actions.addTodo(state.input)}>Add</button>
             <ul>
                 {state.todos.map((todo, index) => (
                     <li>
@@ -85,9 +91,10 @@ export const Todos = () => {
 
 ## Example usage with React Context
 
-Useful when you want to initialize the state using props.
+Useful when you need to initialize the state using component props.
 
 ```ts
+// todoStore.ts
 import { createStore, useStore } from "@fransekman/store";
 import { createContext, useContext } from "react";
 
@@ -137,6 +144,7 @@ export const useTodoStore = () => {
 ```
 
 ```tsx
+// TodoStoreProvider.tsx
 import { FC, ReactNode, useMemo } from "react";
 import { createTodoStore, TodoState, TodoStoreContext } from "./todoStore";
 
@@ -149,6 +157,28 @@ export const TodoStoreProvider: FC<{
         <TodoStoreContext.Provider value={store}>
             {children}
         </TodoStoreContext.Provider>
+    );
+};
+```
+
+## Actions are optional
+
+```tsx
+// Count.tsx
+import { createStore, useStore } from "store";
+import React from "react";
+
+export const countStore = createStore({ count: 0 });
+
+export const Count = () => {
+    const { state, set, reset } = useStore(countStore);
+    return (
+        <div>
+            <div>Count: {state.count}</div>
+            <button onClick={() => set({ count: state.count + 1 })}>+</button>
+            <button onClick={() => set({ count: state.count - 1 })}>-</button>
+            <button onClick={reset}>Reset</button>
+        </div>
     );
 };
 ```
