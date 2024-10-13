@@ -3,7 +3,7 @@ import { useSyncExternalStore } from "react";
 export type Store<TState extends object, TActions extends object> = {
     get: () => TState;
     set: (setter: Setter<TState>) => TState;
-    reset: () => void;
+    reset: () => TState;
     subscribe: (listener: () => void) => () => void;
     actions: TActions;
 };
@@ -39,6 +39,7 @@ export const createStore = <
     const reset = () => {
         state = initialState;
         dispatch();
+        return state;
     };
 
     const subscribe = (listener: () => void) => {

@@ -1,6 +1,6 @@
 {
     "name": "@fransekman/store",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "author": "Frans Ekman <fransedvinekman@gmail.com>",
     "license": "MIT",
     "description": "A tiny state management library for React.",
@@ -11,7 +11,6 @@
         "reducer",
         "redux"
     ],
-    "homepage": "https://github.com/fransek/store#readme",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/fransek/store"
