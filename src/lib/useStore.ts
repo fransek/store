@@ -8,6 +8,6 @@ export const useStore = <TState extends object, TActions extends object>({
     subscribe,
     actions,
 }: Store<TState, TActions>) => {
-    const state = useSyncExternalStore(subscribe, get);
+    const state = useSyncExternalStore(subscribe, get, get);
     return { state, actions, set, reset };
 };
