@@ -1,4 +1,4 @@
-# @fransekman/store
+# fransek-store
 
 A tiny state management library for React.
 
@@ -7,14 +7,14 @@ A tiny state management library for React.
 1. Install the package:
 
 ```sh
-npm i @fransekman/store
+npm i fransek-store
 ```
 
 2. Create a store:
 
 ```ts
 // todoStore.ts
-import { createStore, useStore } from "@fransekman/store";
+import { createStore, useStore } from "fransek-store";
 
 type Todo = {
     text: string;
@@ -95,7 +95,7 @@ Useful when you need to initialize the state using component props.
 
 ```ts
 // todoStore.ts
-import { createStore, useStore } from "@fransekman/store";
+import { createStore, useStore } from "fransek-store";
 import { createContext, useContext } from "react";
 
 type Todo = {
@@ -165,7 +165,7 @@ export const TodoStoreProvider: FC<{
 
 ```tsx
 // Count.tsx
-import { createStore, useStore } from "@fransekman/store";
+import { createStore, useStore } from "fransek-store";
 import React from "react";
 
 export const countStore = createStore({ count: 0 });
