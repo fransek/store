@@ -54,4 +54,33 @@ describe("createStore", () => {
         store.actions.decrement();
         expect(store.actions.getCount()).toBe(0);
     });
+
+    it("should call onStateChange if provided", () => {
+        const initialState = { count: 0, other: "foo" };
+        const store = createStore(initialState, null, {
+            onStateChange: (state, set) => set({ other: state.other + "bar" }),
+        });
+        store.set({ count: 1 });
+        expect(store.get()).toEqual({ count: 1, other: "foobar" });
+    });
+
+    it("should reset on detach if resetOnDetach is true", () => {
+        const initialState = { count: 0 };
+        const store = createStore(initialState, null, { resetOnDetach: true });
+        const listener = vi.fn();
+        const unsubscribe = store.subscribe(listener);
+        store.set({ count: 1 });
+        unsubscribe();
+        expect(store.get()).toEqual(initialState);
+    });
+
+    it("should not reset on detach if resetOnDetach is false", () => {
+        const initialState = { count: 0 };
+        const store = createStore(initialState, null, { resetOnDetach: false });
+        const listener = vi.fn();
+        const unsubscribe = store.subscribe(listener);
+        store.set({ count: 1 });
+        unsubscribe();
+        expect(store.get()).toEqual({ count: 1 });
+    });
 });

@@ -1,41 +1,63 @@
 export type Store<TState extends object, TActions extends object> = {
     get: () => TState;
-    set: (setter: Setter<TState>) => TState;
+    set: (stateModifier: StateModifier<TState>) => TState;
     reset: () => TState;
     subscribe: (listener: () => void) => () => void;
     actions: TActions;
 };
 
-export type Setter<TState extends object> =
+export type Setter<TState extends object> = (
+    stateModifier: StateModifier<TState>,
+) => TState;
+
+export type Getter<TState extends object> = () => TState;
+
+export type StateModifier<TState extends object> =
     | Partial<TState>
     | ((state: TState) => Partial<TState>);
+
+export type DefineActions<TState extends object, TActions> = (
+    set: (setter: StateModifier<TState>) => TState,
+    get: () => TState,
+) => TActions;
+
+export type StoreOptions<TState extends object> = {
+    onStateChange?: (state: TState, set: Setter<TState>) => void;
+    resetOnDetach?: boolean;
+};
 
 export const createStore = <
     TState extends object,
     TActions extends object = Record<never, never>,
 >(
     initialState: TState,
-    createActions?: (
-        set: (setter: Setter<TState>) => TState,
-        get: () => TState,
-    ) => TActions,
+    defineActions: DefineActions<TState, TActions> | null = null,
+    { onStateChange, resetOnDetach = false }: StoreOptions<TState> = {},
 ): Store<TState, TActions> => {
     let state = initialState;
     let listeners: (() => void)[] = [];
 
     const dispatch = () => listeners.forEach((listener) => listener());
 
-    const get = () => state;
+    const get: Getter<TState> = () => state;
 
-    const set = (setter: Setter<TState>) => {
+    const setSilently: Setter<TState> = (setter) => {
         const newState = typeof setter === "function" ? setter(state) : setter;
         state = { ...state, ...newState };
+        return state;
+    };
+
+    const set: Setter<TState> = (setter) => {
+        const newState = typeof setter === "function" ? setter(state) : setter;
+        state = { ...state, ...newState };
+        onStateChange?.(state, setSilently);
         dispatch();
         return state;
     };
 
     const reset = () => {
         state = initialState;
+        onStateChange?.(state, setSilently);
         dispatch();
         return state;
     };
@@ -44,10 +66,13 @@ export const createStore = <
         listeners.push(listener);
         return () => {
             listeners = listeners.filter((l) => l !== listener);
+            if (listeners.length === 0 && resetOnDetach) {
+                reset();
+            }
         };
     };
 
-    const actions = createActions ? createActions(set, get) : ({} as TActions);
+    const actions = defineActions ? defineActions(set, get) : ({} as TActions);
 
     return { get, set, reset, subscribe, actions };
 };
