@@ -1,19 +1,39 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createStore, useStore, useStoreContext } from "fransek-store";
-import { createContext, useMemo } from "react";
+import {
+  createStore,
+  createStoreContext,
+  useStore,
+  useStoreContext,
+} from "fransek-store";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/context")({
   component: Counter,
 });
 
+// Create the store context
+const CounterStoreContext = createStoreContext(
+  (initialState: { count: number }) =>
+    createStore(initialState, (set) => ({
+      increment: () => set((state) => ({ count: state.count + 1 })),
+      decrement: () => set((state) => ({ count: state.count - 1 })),
+    })),
+);
+
 function Counter() {
-  const store = useMemo(() => createCounterStore({ count: 0 }), []);
+  // Create an instance of the store. Make sure the store is not instantiated on every render.
+  const store = useMemo(
+    () => CounterStoreContext.instantiate({ count: 0 }),
+    [],
+  );
+  // Use the store
   const {
     state: { count },
     actions: { increment, decrement },
   } = useStore(store);
 
   return (
+    // Provide the store to the context
     <CounterStoreContext.Provider value={store}>
       <div className="p-2">
         <h3 className="font-bold">Parent Component:</h3>
@@ -28,21 +48,8 @@ function Counter() {
   );
 }
 
-interface CounterState {
-  count: number;
-}
-
-const createCounterStore = (initialState: CounterState) =>
-  createStore(initialState, (set) => ({
-    increment: () => set((state) => ({ count: state.count + 1 })),
-    decrement: () => set((state) => ({ count: state.count - 1 })),
-  }));
-
-const CounterStoreContext = createContext<ReturnType<
-  typeof createCounterStore
-> | null>(null);
-
 const ChildComponent = () => {
+  // Access the store from the context
   const {
     state: { count },
   } = useStoreContext(CounterStoreContext);
