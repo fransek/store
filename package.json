@@ -1,6 +1,6 @@
 {
   "name": "fransek-store",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "Frans Ekman <fransedvinekman@gmail.com>",
   "license": "MIT",
   "description": "A tiny state management library for React.",

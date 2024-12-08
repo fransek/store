@@ -3,6 +3,7 @@ import { Store } from "./createStore";
 
 export type StoreContext<T extends (...args: any) => Store<any, any>> =
   React.Context<ReturnType<T> | null> & {
+    /** Returns a new instance of the store. */
     instantiate: T;
   };
 
