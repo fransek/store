@@ -11,11 +11,18 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TodoImport } from './routes/todo'
 import { Route as CounterImport } from './routes/counter'
 import { Route as ContextImport } from './routes/context'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const TodoRoute = TodoImport.update({
+  id: '/todo',
+  path: '/todo',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const CounterRoute = CounterImport.update({
   id: '/counter',
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CounterImport
       parentRoute: typeof rootRoute
     }
+    '/todo': {
+      id: '/todo'
+      path: '/todo'
+      fullPath: '/todo'
+      preLoaderRoute: typeof TodoImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -69,12 +83,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/context': typeof ContextRoute
   '/counter': typeof CounterRoute
+  '/todo': typeof TodoRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/context': typeof ContextRoute
   '/counter': typeof CounterRoute
+  '/todo': typeof TodoRoute
 }
 
 export interface FileRoutesById {
@@ -82,14 +98,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/context': typeof ContextRoute
   '/counter': typeof CounterRoute
+  '/todo': typeof TodoRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/context' | '/counter'
+  fullPaths: '/' | '/context' | '/counter' | '/todo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/context' | '/counter'
-  id: '__root__' | '/' | '/context' | '/counter'
+  to: '/' | '/context' | '/counter' | '/todo'
+  id: '__root__' | '/' | '/context' | '/counter' | '/todo'
   fileRoutesById: FileRoutesById
 }
 
@@ -97,12 +114,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContextRoute: typeof ContextRoute
   CounterRoute: typeof CounterRoute
+  TodoRoute: typeof TodoRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContextRoute: ContextRoute,
   CounterRoute: CounterRoute,
+  TodoRoute: TodoRoute,
 }
 
 export const routeTree = rootRoute
@@ -117,7 +136,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/context",
-        "/counter"
+        "/counter",
+        "/todo"
       ]
     },
     "/": {
@@ -128,6 +148,9 @@ export const routeTree = rootRoute
     },
     "/counter": {
       "filePath": "counter.tsx"
+    },
+    "/todo": {
+      "filePath": "todo.tsx"
     }
   }
 }

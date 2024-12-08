@@ -35,15 +35,13 @@ function Counter() {
   return (
     // Provide the store to the context
     <CounterStoreContext.Provider value={store}>
-      <div className="p-2">
-        <h3 className="font-bold">Parent Component:</h3>
-        <div className="flex gap-4 items-center">
-          <button onClick={decrement}>-</button>
-          <div>{count}</div>
-          <button onClick={increment}>+</button>
-        </div>
-        <ChildComponent />
+      <h3 className="font-bold">Parent Component</h3>
+      <div className="flex gap-4 items-center mb-4">
+        <button onClick={decrement}>-</button>
+        <div>{count}</div>
+        <button onClick={increment}>+</button>
       </div>
+      <ChildComponent />
     </CounterStoreContext.Provider>
   );
 }
@@ -55,11 +53,11 @@ const ChildComponent = () => {
   } = useStoreContext(CounterStoreContext);
 
   return (
-    <>
-      <h3 className="font-bold">Child Component:</h3>
+    <div>
+      <h3 className="font-bold">Child Component</h3>
       <div className="flex gap-4 items-center">
         <div>Count: {count}</div>
       </div>
-    </>
+    </div>
   );
 };
