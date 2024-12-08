@@ -1,42 +1,43 @@
 {
-    "name": "fransek-store",
-    "version": "1.1.1",
-    "author": "Frans Ekman <fransedvinekman@gmail.com>",
-    "license": "MIT",
-    "description": "A tiny state management library for React.",
-    "keywords": [
-        "store",
-        "state",
-        "react",
-        "reducer",
-        "redux"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/fransek/store"
-    },
-    "bugs": {
-        "url": "https://github.com/fransek/store/issues"
-    },
-    "files": [
-        "dist"
-    ],
-    "main": "dist/index.js",
-    "scripts": {
-        "build": "tsc --build",
-        "dev": "tsc --watch",
-        "test": "vitest"
-    },
-    "devDependencies": {
-        "@types/node": "^22.9.0",
-        "@types/react": "^18.3.12",
-        "@typescript-eslint/eslint-plugin": "^8.13.0",
-        "@typescript-eslint/parser": "^8.13.0",
-        "eslint": "^9.14.0",
-        "eslint-config-prettier": "^9.1.0",
-        "eslint-plugin-prettier": "^5.2.1",
-        "prettier": "^3.3.3",
-        "typescript": "^5.6.3",
-        "vitest": "^2.1.4"
-    }
+  "name": "fransek-store",
+  "version": "1.1.1",
+  "author": "Frans Ekman <fransedvinekman@gmail.com>",
+  "license": "MIT",
+  "description": "A tiny state management library for React.",
+  "keywords": [
+    "store",
+    "state",
+    "react",
+    "reducer",
+    "redux"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fransek/store"
+  },
+  "bugs": {
+    "url": "https://github.com/fransek/store/issues"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "demo": "cd demo && pnpm run dev"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "eslint": "^9.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
 }

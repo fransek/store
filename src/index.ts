@@ -1,15 +1,17 @@
 import {
-    createStore,
-    GetState,
-    StoreOptions,
-    SetState,
+  createStore,
+  GetState,
+  StoreOptions,
+  SetState,
 } from "./lib/createStore";
 import { useStore } from "./lib/useStore";
+import { useStoreContext } from "./lib/useStoreContext";
 
 export {
-    createStore,
-    useStore,
-    type SetState,
-    type GetState,
-    type StoreOptions,
+  createStore,
+  useStore,
+  useStoreContext,
+  type SetState,
+  type GetState,
+  type StoreOptions,
 };
