@@ -19,12 +19,10 @@ function Counter() {
   } = useStore(store);
 
   return (
-    <>
-      <div className="p-2 flex gap-4 items-center">
-        <button onClick={decrement}>-</button>
-        <div>{count}</div>
-        <button onClick={increment}>+</button>
-      </div>
-    </>
+    <div className="p-2 flex gap-4 items-center">
+      <button onClick={decrement}>-</button>
+      <div>{count}</div>
+      <button onClick={increment}>+</button>
+    </div>
   );
 }

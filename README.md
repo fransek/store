@@ -13,180 +13,117 @@ npm i fransek-store
 2. Create a store:
 
 ```ts
-// todoStore.ts
-import { createStore, useStore } from "fransek-store";
+import { createStore } from "fransek-store";
 
-type Todo = {
-    text: string;
-    completed: boolean;
-};
-
-interface TodoState {
-    input: string;
-    todos: Todo[];
-}
-
-const initialState: TodoState = {
-    input: "",
-    todos: [],
-};
-
-const todoStore = createStore(initialState, (set) => ({
-    setInput: (input: string) => set({ input }),
-    addTodo: (text: string) =>
-        set((state) => {
-            const newTodos = [...state.todos, { text, completed: false }];
-            return {
-                todos: newTodos,
-                input: "",
-            };
-        }),
-    toggleTodo: (index: number) =>
-        set((state) => {
-            const newTodos = [...state.todos];
-            newTodos[index].completed = !newTodos[index].completed;
-            return {
-                todos: newTodos,
-            };
-        }),
+const store = createStore({ count: 0 }, (set) => ({
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 })),
 }));
-
-export const useTodoStore = () => useStore(todoStore);
 ```
 
 3. Use the store:
 
 ```tsx
-// Todos.tsx
-import { useTodoStore } from "./todoStore";
+import { useStore } from "fransek-store";
 
-export const Todos = () => {
-    const { state, actions } = useTodoStore();
+function Counter() {
+  const {
+    state: { count },
+    actions: { increment, decrement },
+  } = useStore(store);
 
-    return (
-        <div>
-            <h1>Todos</h1>
-            <input
-                type="text"
-                value={state.input}
-                onChange={(e) => actions.setInput(e.target.value)}
-            />
-            <button onClick={() => actions.addTodo(state.input)}>Add</button>
-            <ul>
-                {state.todos.map((todo, index) => (
-                    <li>
-                        <input
-                            type="checkbox"
-                            checked={todo.completed}
-                            onChange={() => actions.toggleTodo(index)}
-                        />
-                        <span>{todo.text}</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
-};
+  return (
+    <div>
+      <button onClick={decrement}>-</button>
+      <div>{count}</div>
+      <button onClick={increment}>+</button>
+    </div>
+  );
+}
 ```
 
-## Example usage with React Context
+## Creating a context store
 
-Useful when you need to initialize the state using component props.
+Useful when you need to initialize the state asynchronously or using props.
 
 ```ts
-// todoStore.ts
-import { createStore, useStore } from "fransek-store";
-import { createContext, useContext } from "react";
+import {
+  createStore,
+  createStoreContext,
+  useStore,
+  useStoreContext,
+} from "fransek-store";
+import { useMemo } from "react";
 
-type Todo = {
-    text: string;
-    completed: boolean;
-};
+// Create the store context
+const CounterStoreContext = createStoreContext(
+  (initialState: { count: number }) =>
+    createStore(initialState, (set) => ({
+      increment: () => set((state) => ({ count: state.count + 1 })),
+      decrement: () => set((state) => ({ count: state.count - 1 })),
+    })),
+);
 
-export interface TodoState {
-    input: string;
-    todos: Todo[];
+function Counter({ initialState }: { initialState: { count: number } }) {
+  // Create an instance of the store. Make sure the store is not instantiated on every render.
+  const store = useMemo(
+    () => CounterStoreContext.instantiate(initialState),
+    [initialState],
+  );
+  // Use the store
+  const {
+    state: { count },
+    actions: { increment, decrement },
+  } = useStore(store);
+
+  return (
+    // Provide the store to the context
+    <CounterStoreContext.Provider value={store}>
+      <button onClick={decrement}>-</button>
+      <div>{count}</div>
+      <button onClick={increment}>+</button>
+      <ChildComponent />
+    </CounterStoreContext.Provider>
+  );
 }
 
-export const createTodoStore = (initialState: TodoState) => {
-    return createStore(initialState, (set) => ({
-        setInput: (input: string) => set({ input }),
-        addTodo: (text: string) =>
-            set((state) => {
-                const newTodos = [...state.todos, { text, completed: false }];
-                return {
-                    todos: newTodos,
-                    input: "",
-                };
-            }),
-        toggleTodo: (index: number) =>
-            set((state) => {
-                const newTodos = [...state.todos];
-                newTodos[index].completed = !newTodos[index].completed;
-                return {
-                    todos: newTodos,
-                };
-            }),
-    }));
-};
+const ChildComponent = () => {
+  // Access the store from the context
+  const {
+    state: { count },
+  } = useStoreContext(CounterStoreContext);
 
-export const TodoStoreContext = createContext<ReturnType<
-    typeof createTodoStore
-> | null>(null);
-
-export const useTodoStore = () => {
-    const store = useContext(TodoStoreContext);
-    if (!store) {
-        throw new Error("useTodoStore must be used within a TodoStoreContext");
-    }
-    return useStore(store);
-};
-```
-
-```tsx
-// TodoStoreProvider.tsx
-import { FC, ReactNode, useMemo } from "react";
-import { createTodoStore, TodoState, TodoStoreContext } from "./todoStore";
-
-export const TodoStoreProvider: FC<{
-    initialState: TodoState;
-    children: ReactNode;
-}> = ({ initialState, children }) => {
-    const store = useMemo(() => createTodoStore(initialState), [initialState]);
-    return (
-        <TodoStoreContext.Provider value={store}>
-            {children}
-        </TodoStoreContext.Provider>
-    );
+  return <div>Count: {count}</div>;
 };
 ```
 
 ## Actions are optional
 
+You can use the `set` and `reset` functions to update the state directly.
+
 ```tsx
-// Count.tsx
 import { createStore, useStore } from "fransek-store";
-import React from "react";
 
-export const countStore = createStore({ count: 0 });
+const store = createStore({ count: 0 });
 
-export const Count = () => {
-    const { state, set, reset } = useStore(countStore);
-    return (
-        <div>
-            <div>Count: {state.count}</div>
-            <button
-                onClick={() => set((state) => ({ count: state.count + 1 }))}
-            >
-                +
-            </button>
-            <button
-                onClick={() => set((state) => ({ count: state.count - 1 }))}
-            >
-                -
-            </button>
-            <button onClick={reset}>Reset</button>
-        </div>
-    );
-};
+function Counter() {
+  const {
+    state: { count },
+    set,
+    reset,
+  } = useStore(store);
+
+  return (
+    <div>
+      <button onClick={() => set(({ count }) => ({ count: count + 1 }))}>
+        -
+      </button>
+      <div>{count}</div>
+      <button onClick={() => set(({ count }) => ({ count: count - 1 }))}>
+        +
+      </button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
 ```
