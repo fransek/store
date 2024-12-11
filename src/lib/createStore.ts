@@ -22,9 +22,15 @@ export type DefineActions<TState extends object, TActions> = (
 ) => TActions;
 
 export type StoreOptions<TState extends object> = {
-  /** Optional callback that is invoked whenever the state changes. Receives the new state and a setter function. */
+  /** Invoked when the store is created. Receives the initial state and a setter function. */
+  onLoad?: (state: TState, set: SetState<TState>) => void;
+  /** Invoked when the store is subscribed to. Receives the current state and a setter function. */
+  onAttach?: (state: TState, set: SetState<TState>) => void;
+  /** Invoked when the store is unsubscribed from. Receives the current state and a setter function. */
+  onDetach?: (state: TState, set: SetState<TState>) => void;
+  /** Invoked whenever the state changes. Receives the new state and a setter function. */
   onStateChange?: (state: TState, set: SetState<TState>) => void;
-  /** Optional flag indicating whether the state should reset when the last listener unsubscribes. */
+  /** Whether to reset the state to the initial state when the store is detached. */
   resetOnDetach?: boolean;
 };
 
@@ -43,15 +49,16 @@ export const createStore = <
 >(
   initialState: TState,
   defineActions: DefineActions<TState, TActions> | null = null,
-  { onStateChange, resetOnDetach = false }: StoreOptions<TState> = {},
+  {
+    onLoad,
+    onAttach,
+    onDetach,
+    onStateChange,
+    resetOnDetach = false,
+  }: StoreOptions<TState> = {},
 ): Store<TState, TActions> => {
   let state = initialState;
   let listeners: (() => void)[] = [];
-
-  const dispatch = () => {
-    onStateChange?.(state, setSilently);
-    listeners.forEach((listener) => listener());
-  };
 
   const get: GetState<TState> = () => state;
 
@@ -62,6 +69,11 @@ export const createStore = <
         : stateModifier;
     state = { ...state, ...newState };
     return state;
+  };
+
+  const dispatch = () => {
+    onStateChange?.(state, setSilently);
+    listeners.forEach((listener) => listener());
   };
 
   const set: SetState<TState> = (stateModifier: StateModifier<TState>) => {
@@ -77,16 +89,28 @@ export const createStore = <
   };
 
   const subscribe = (listener: () => void) => {
+    if (listeners.length === 0) {
+      onAttach?.(state, set);
+    }
+
     listeners.push(listener);
+
     return () => {
       listeners = listeners.filter((l) => l !== listener);
-      if (listeners.length === 0 && resetOnDetach) {
-        reset();
+
+      if (listeners.length === 0) {
+        onDetach?.(state, set);
+
+        if (resetOnDetach) {
+          reset();
+        }
       }
     };
   };
 
   const actions = defineActions ? defineActions(set, get) : ({} as TActions);
+
+  onLoad?.(state, set);
 
   return { get, set, reset, subscribe, actions };
 };

@@ -83,4 +83,33 @@ describe("createStore", () => {
     unsubscribe();
     expect(store.get()).toEqual({ count: 1 });
   });
+
+  it("should call onAttach on first subscribe", () => {
+    const initialState = { count: 0 };
+    const store = createStore(initialState, null, {
+      onAttach: (state, set) => set({ count: state.count + 1 }),
+    });
+    const listener = vi.fn();
+    store.subscribe(listener);
+    expect(store.get().count).toBe(1);
+  });
+
+  it("should call onDetach on last unsubscribe", () => {
+    const initialState = { count: 0 };
+    const store = createStore(initialState, null, {
+      onDetach: (state, set) => set({ count: state.count + 1 }),
+    });
+    const listener = vi.fn();
+    const unsubscribe = store.subscribe(listener);
+    unsubscribe();
+    expect(store.get().count).toBe(1);
+  });
+
+  it("should call onLoad on store creation", () => {
+    const initialState = { count: 0 };
+    const store = createStore(initialState, null, {
+      onLoad: (state, set) => set({ count: state.count + 1 }),
+    });
+    expect(store.get().count).toBe(1);
+  });
 });
