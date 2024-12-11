@@ -22,13 +22,13 @@ export type DefineActions<TState extends object, TActions> = (
 ) => TActions;
 
 export type StoreOptions<TState extends object> = {
-  /** Invoked when the store is created. Receives the initial state and a setter function. */
+  /** Invoked when the store is created. */
   onLoad?: (state: TState, set: SetState<TState>) => void;
-  /** Invoked when the store is subscribed to. Receives the current state and a setter function. */
+  /** Invoked when the store is subscribed to. */
   onAttach?: (state: TState, set: SetState<TState>) => void;
-  /** Invoked when the store is unsubscribed from. Receives the current state and a setter function. */
+  /** Invoked when the store is unsubscribed from. */
   onDetach?: (state: TState, set: SetState<TState>) => void;
-  /** Invoked whenever the state changes. Receives the new state and a setter function. */
+  /** Invoked whenever the state changes. */
   onStateChange?: (state: TState, set: SetState<TState>) => void;
   /** Whether to reset the state to the initial state when the store is detached. */
   resetOnDetach?: boolean;

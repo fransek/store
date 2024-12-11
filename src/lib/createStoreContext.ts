@@ -13,7 +13,7 @@ export type StoreContext<
 /**
  * Creates a store context with the given store instantiation function.
  *
- * @param instantiate - The function used to instantiate the store.
+ * @param instantiate - A function that returns a new store instance.
  * @returns A store context object with the given instantiation function.
  */
 export const createStoreContext = <
