@@ -8,7 +8,7 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <div className="flex">
-      <div className="p-2 flex flex-col gap-2 text-lg border-r-[1px] min-h-screen p-4">
+      <div className="flex flex-col gap-2 text-lg border-r min-h-screen p-4">
         <Link
           to="/"
           className="font-bold"
@@ -42,6 +42,14 @@ function RootComponent() {
           }}
         >
           Todo app
+        </Link>
+        <Link
+          to="/async"
+          activeProps={{
+            className: "text-blue-500",
+          }}
+        >
+          Async
         </Link>
       </div>
       <main className="p-4">

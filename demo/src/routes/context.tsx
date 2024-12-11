@@ -8,7 +8,7 @@ import {
 import { useMemo } from "react";
 
 export const Route = createFileRoute("/context")({
-  component: Counter,
+  component: RouteComponent,
 });
 
 // Create the store context
@@ -20,7 +20,7 @@ const CounterStoreContext = createStoreContext(
     })),
 );
 
-function Counter() {
+function RouteComponent() {
   // Create an instance of the store. Make sure the store is not instantiated on every render.
   const store = useMemo(
     () => CounterStoreContext.instantiate({ count: 0 }),

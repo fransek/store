@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createStore, useStore } from "fransek-store";
 
 export const Route = createFileRoute("/counter")({
-  component: Counter,
+  component: RouteComponent,
 });
 
 // Create the store
@@ -11,7 +11,7 @@ const store = createStore({ count: 0 }, (set) => ({
   decrement: () => set((state) => ({ count: state.count - 1 })),
 }));
 
-function Counter() {
+function RouteComponent() {
   // Use the store
   const {
     state: { count },

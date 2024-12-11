@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as TodoImport } from './routes/todo'
 import { Route as CounterImport } from './routes/counter'
 import { Route as ContextImport } from './routes/context'
+import { Route as AsyncImport } from './routes/async'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
@@ -36,6 +37,12 @@ const ContextRoute = ContextImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AsyncRoute = AsyncImport.update({
+  id: '/async',
+  path: '/async',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
@@ -51,6 +58,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/async': {
+      id: '/async'
+      path: '/async'
+      fullPath: '/async'
+      preLoaderRoute: typeof AsyncImport
       parentRoute: typeof rootRoute
     }
     '/context': {
@@ -81,6 +95,7 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/async': typeof AsyncRoute
   '/context': typeof ContextRoute
   '/counter': typeof CounterRoute
   '/todo': typeof TodoRoute
@@ -88,6 +103,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/async': typeof AsyncRoute
   '/context': typeof ContextRoute
   '/counter': typeof CounterRoute
   '/todo': typeof TodoRoute
@@ -96,6 +112,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/async': typeof AsyncRoute
   '/context': typeof ContextRoute
   '/counter': typeof CounterRoute
   '/todo': typeof TodoRoute
@@ -103,15 +120,16 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/context' | '/counter' | '/todo'
+  fullPaths: '/' | '/async' | '/context' | '/counter' | '/todo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/context' | '/counter' | '/todo'
-  id: '__root__' | '/' | '/context' | '/counter' | '/todo'
+  to: '/' | '/async' | '/context' | '/counter' | '/todo'
+  id: '__root__' | '/' | '/async' | '/context' | '/counter' | '/todo'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AsyncRoute: typeof AsyncRoute
   ContextRoute: typeof ContextRoute
   CounterRoute: typeof CounterRoute
   TodoRoute: typeof TodoRoute
@@ -119,6 +137,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AsyncRoute: AsyncRoute,
   ContextRoute: ContextRoute,
   CounterRoute: CounterRoute,
   TodoRoute: TodoRoute,
@@ -135,6 +154,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/async",
         "/context",
         "/counter",
         "/todo"
@@ -142,6 +162,9 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/async": {
+      "filePath": "async.tsx"
     },
     "/context": {
       "filePath": "context.tsx"
