@@ -27,8 +27,8 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.CI
-      ? "http://127.0.0.1:5173/"
-      : "http://127.0.0.1:3001/",
+      ? "http://localhost:5173/"
+      : "http://localhost:3001/",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -75,7 +75,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: process.env.CI ? "pnpm run demo:start" : "pnpm run demo",
-    url: process.env.CI ? "http://127.0.0.1:5173/" : "http://127.0.0.1:3001/",
+    url: process.env.CI ? "http://localhost:5173/" : "http://localhost:3001/",
     reuseExistingServer: !process.env.CI,
   },
 });
