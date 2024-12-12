@@ -5,7 +5,7 @@ import {
   useStore,
   useStoreContext,
 } from "fransek-store";
-import { useMemo } from "react";
+import { useRef } from "react";
 
 export const Route = createFileRoute("/context")({
   component: RouteComponent,
@@ -22,10 +22,7 @@ const CounterStoreContext = createStoreContext(
 
 function RouteComponent() {
   // Create an instance of the store. Make sure the store is not instantiated on every render.
-  const store = useMemo(
-    () => CounterStoreContext.instantiate({ count: 0 }),
-    [],
-  );
+  const store = useRef(CounterStoreContext.instantiate({ count: 0 })).current;
   // Use the store
   const {
     state: { count },
