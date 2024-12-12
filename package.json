@@ -27,8 +27,11 @@
     "dev": "tsc --watch",
     "test": "vitest --run",
     "test:watch": "vitest",
+    "ui-test": "playwright test",
     "coverage": "vitest --run --coverage",
     "demo": "cd demo && pnpm run dev",
+    "demo:build": "cd demo && pnpm install && pnpm build",
+    "demo:start": "cd demo && pnpm run start",
     "lint": "eslint",
     "prepare": "husky"
   },
