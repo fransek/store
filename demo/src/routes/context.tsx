@@ -14,10 +14,14 @@ export const Route = createFileRoute("/context")({
 // Create the store context
 const CounterStoreContext = createStoreContext(
   (initialState: { count: number }) =>
-    createStore(initialState, (set) => ({
-      increment: () => set((state) => ({ count: state.count + 1 })),
-      decrement: () => set((state) => ({ count: state.count - 1 })),
-    })),
+    createStore(
+      initialState,
+      (set) => ({
+        increment: () => set((state) => ({ count: state.count + 1 })),
+        decrement: () => set((state) => ({ count: state.count - 1 })),
+      }),
+      { resetOnDetach: true },
+    ),
 );
 
 function RouteComponent() {
@@ -35,7 +39,7 @@ function RouteComponent() {
       <h3 className="font-bold">Parent Component</h3>
       <div className="flex gap-4 items-center mb-4">
         <button onClick={decrement}>-</button>
-        <div>{count}</div>
+        <div aria-label="count">{count}</div>
         <button onClick={increment}>+</button>
       </div>
       <ChildComponent />
@@ -53,7 +57,7 @@ const ChildComponent = () => {
     <div>
       <h3 className="font-bold">Child Component</h3>
       <div className="flex gap-4 items-center">
-        <div>Count: {count}</div>
+        <div data-testid="child">Count: {count}</div>
       </div>
     </div>
   );

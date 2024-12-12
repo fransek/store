@@ -21,6 +21,7 @@ function RouteComponent() {
         }}
       >
         <input
+          aria-label="Add a new todo"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="border-2 rounded p-1 mr-2"
@@ -30,6 +31,8 @@ function RouteComponent() {
       <ul>
         {todos.map((todo, index) => (
           <li
+            key={todo.title}
+            data-testid={`todo-${index}`}
             role="button"
             onClick={() => toggleTodo(index)}
             className={`list-disc list-inside ${todo.complete && "line-through"}`}

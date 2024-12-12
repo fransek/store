@@ -33,7 +33,7 @@ function RootComponent() {
             className: "text-blue-500",
           }}
         >
-          Counter with Context
+          Counter with context
         </Link>
         <Link
           to="/todo"
