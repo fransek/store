@@ -27,12 +27,16 @@
     "dev": "tsc --watch",
     "test": "vitest --run",
     "test:watch": "vitest",
+    "ui-test": "playwright test",
     "coverage": "vitest --run --coverage",
     "demo": "cd demo && pnpm run dev",
+    "demo:build": "cd demo && pnpm install && pnpm build",
+    "demo:start": "cd demo && pnpm run start",
     "lint": "eslint",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.1",
     "@types/node": "^22.9.0",
     "@types/react": "^18.3.12",
     "@typescript-eslint/eslint-plugin": "^8.13.0",

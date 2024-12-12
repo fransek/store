@@ -21,7 +21,7 @@ function RouteComponent() {
   return (
     <div className="flex gap-4 items-center">
       <button onClick={decrement}>-</button>
-      <div>{count}</div>
+      <div aria-label="count">{count}</div>
       <button onClick={increment}>+</button>
     </div>
   );

@@ -18,9 +18,14 @@ function RouteComponent() {
         {loading ? (
           <div>Fetching posts...</div>
         ) : (
-          posts.map((post) => (
-            <div key={post.id} className="border p-4 rounded">
-              <h3 className="font-bold mb-2">{post.title}</h3>
+          posts.map((post, index) => (
+            <div key={post.id} className="border p-4 rounded w-full">
+              <h3
+                className="font-bold mb-2"
+                data-testid={`post-${index}-title`}
+              >
+                {post.title}
+              </h3>
               <p>{post.body}</p>
             </div>
           ))
@@ -45,7 +50,7 @@ interface State {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const fetchPosts = async () => {
-  await sleep(1000);
+  await sleep(500);
   const response = await fetch("https://jsonplaceholder.typicode.com/posts");
   return await response.json();
 };
@@ -64,6 +69,5 @@ const store = createStore(
       const posts = await fetchPosts();
       set({ posts, loading: false });
     },
-    resetOnDetach: true,
   },
 );

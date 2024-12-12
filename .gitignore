@@ -14,3 +14,7 @@ logs
 # Misc
 .DS_Store
 coverage
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
