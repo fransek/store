@@ -3,6 +3,27 @@ import { createStore, DefineActions, Store, StoreOptions } from "./createStore";
 
 type StorageType = "local" | "session";
 
+const getStorage = (storage: StorageType) => {
+  switch (storage) {
+    case "local":
+      return localStorage;
+    case "session":
+      return sessionStorage;
+  }
+};
+
+const registerStoreListener = (storeKey: string) => {
+  if (!window.__store_listeners) {
+    window.__store_listeners = new Set();
+  }
+
+  window.__store_listeners.add(storeKey);
+};
+
+const isStoreListenerRegistered = (storeKey: string) => {
+  return window.__store_listeners?.has(storeKey);
+};
+
 interface PersistentStoreOptions<TState extends object>
   extends StoreOptions<TState> {
   /** The type of storage to use ("local" or "session"). Defaults to "local". */
@@ -53,7 +74,12 @@ export const createPersistentStore = <
 
   if (isBrowser) {
     store.subscribe(() => {
-      selectedStorage.setItem(key, superjson.stringify(store.get()));
+      const currentSnapshot = selectedStorage.getItem(key);
+      const newSnapshot = superjson.stringify(store.get());
+
+      if (newSnapshot !== currentSnapshot) {
+        selectedStorage.setItem(key, newSnapshot);
+      }
     });
 
     const sync = (event: StorageEvent) => {
@@ -62,19 +88,13 @@ export const createPersistentStore = <
       }
     };
 
-    window.addEventListener("storage", sync);
+    if (!isStoreListenerRegistered(storeKey)) {
+      window.addEventListener("storage", sync);
+      registerStoreListener(storeKey);
+    }
   }
 
   const reset = () => store.set(initialState);
 
   return { ...store, reset };
-};
-
-const getStorage = (storage: StorageType) => {
-  switch (storage) {
-    case "local":
-      return localStorage;
-    case "session":
-      return sessionStorage;
-  }
 };
