@@ -30,20 +30,36 @@ export const createPersistentStore = <
   defineActions: DefineActions<TState, TActions> | null = null,
   { storage = "local", ...options }: PersistentStoreOptions<TState> = {},
 ): Store<TState, TActions> => {
+  const selectedStorage = getStorage(storage);
   const isBrowser = typeof window !== "undefined";
+
+  const initialStateKey = `store_initial_${storeKey}`;
+  const initialStateString = isBrowser
+    ? selectedStorage.getItem(initialStateKey)
+    : null;
+
   const key = `store_${storeKey}`;
-  const stateString = isBrowser ? getStorage(storage).getItem(key) : null;
+
+  if (initialStateString !== superjson.stringify(initialState)) {
+    selectedStorage.setItem(initialStateKey, superjson.stringify(initialState));
+    selectedStorage.removeItem(key);
+  }
+
+  const stateString = isBrowser ? selectedStorage.getItem(key) : null;
   const state = stateString
     ? superjson.parse<TState>(stateString)
     : initialState;
   const store = createStore(state, defineActions, options);
+
   if (isBrowser) {
     store.subscribe(() => {
-      getStorage(storage).setItem(key, superjson.stringify(store.get()));
-      console.log(getStorage(storage).getItem(key));
+      selectedStorage.setItem(key, superjson.stringify(store.get()));
     });
   }
-  return store;
+
+  const reset = () => store.set(initialState);
+
+  return { ...store, reset };
 };
 
 const getStorage = (storage: StorageType) => {
