@@ -55,6 +55,13 @@ export const createPersistentStore = <
     store.subscribe(() => {
       selectedStorage.setItem(key, superjson.stringify(store.get()));
     });
+
+    window.addEventListener("storage", (event) => {
+      if (event.key === key && event.newValue) {
+        console.log("updating state");
+        store.set(superjson.parse<TState>(event.newValue));
+      }
+    });
   }
 
   const reset = () => store.set(initialState);
