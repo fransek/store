@@ -57,5 +57,8 @@
       "eslint --fix",
       "bash -c tsc --noEmit"
     ]
+  },
+  "dependencies": {
+    "superjson": "^2.2.2"
   }
 }
