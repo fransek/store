@@ -12,12 +12,13 @@ const getStorage = (storage: StorageType) => {
   }
 };
 
-const registerStoreListener = (storeKey: string) => {
+const registerStoreListener = (storeKey: string, listener: () => void) => {
   if (!window.__store_listeners) {
     window.__store_listeners = new Set();
   }
 
   window.__store_listeners.add(storeKey);
+  window.addEventListener("focus", listener);
 };
 
 const isStoreListenerRegistered = (storeKey: string) => {
@@ -35,7 +36,7 @@ interface PersistentStoreOptions<TState extends object>
  * Defaults to local storage but this can be changed in the options.
  * (The state must be superjson serializable. https://github.com/flightcontrolhq/superjson)
  *
- * @param {string} storeKey - A unique key to identify the store in storage.
+ * @param {string} key - A unique key to identify the store in storage.
  * @param {TState} initialState - The initial state of the store.
  * @param {DefineActions<TState, TActions> | null} [defineActions=null] - A function to define actions for the store.
  * @param {PersistentStoreOptions<TState>} [options={}] - Additional options for the persistent store.
@@ -46,7 +47,7 @@ export const createPersistentStore = <
   TState extends object,
   TActions extends object = Record<never, never>,
 >(
-  storeKey: string,
+  key: string,
   initialState: TState,
   defineActions: DefineActions<TState, TActions> | null = null,
   { storage = "local", ...options }: PersistentStoreOptions<TState> = {},
@@ -54,43 +55,48 @@ export const createPersistentStore = <
   const selectedStorage = getStorage(storage);
   const isBrowser = typeof window !== "undefined";
 
-  const initialStateKey = `store_initial_${storeKey}`;
-  const initialStateString = isBrowser
+  const initialStateKey = `store_init_${key}`;
+  const initialStateSnapshot = isBrowser
     ? selectedStorage.getItem(initialStateKey)
     : null;
+  const initialStateString = superjson.stringify(initialState);
 
-  const key = `store_${storeKey}`;
+  const stateKey = `store_${key}`;
 
-  if (initialStateString !== superjson.stringify(initialState)) {
-    selectedStorage.setItem(initialStateKey, superjson.stringify(initialState));
-    selectedStorage.removeItem(key);
+  if (initialStateSnapshot !== initialStateString) {
+    selectedStorage.setItem(initialStateKey, initialStateString);
+    selectedStorage.removeItem(stateKey);
   }
 
-  const stateString = isBrowser ? selectedStorage.getItem(key) : null;
+  const stateString = isBrowser ? selectedStorage.getItem(stateKey) : null;
   const state = stateString
     ? superjson.parse<TState>(stateString)
     : initialState;
   const store = createStore(state, defineActions, options);
 
   if (isBrowser) {
-    store.subscribe(() => {
-      const currentSnapshot = selectedStorage.getItem(key);
+    const updateSnapshot = () => {
+      const currentSnapshot = selectedStorage.getItem(stateKey);
       const newSnapshot = superjson.stringify(store.get());
 
       if (newSnapshot !== currentSnapshot) {
-        selectedStorage.setItem(key, newSnapshot);
-      }
-    });
-
-    const sync = (event: StorageEvent) => {
-      if (event.key === key && event.newValue) {
-        store.set(superjson.parse<TState>(event.newValue));
+        selectedStorage.setItem(stateKey, newSnapshot);
       }
     };
 
-    if (!isStoreListenerRegistered(storeKey)) {
-      window.addEventListener("storage", sync);
-      registerStoreListener(storeKey);
+    store.subscribe(updateSnapshot);
+
+    const syncStateWithSnapshot = () => {
+      const currentSnapshot = selectedStorage.getItem(stateKey);
+      const currentState = superjson.stringify(store.get());
+
+      if (currentSnapshot && currentSnapshot !== currentState) {
+        store.set(superjson.parse<TState>(currentSnapshot));
+      }
+    };
+
+    if (!isStoreListenerRegistered(key)) {
+      registerStoreListener(key, syncStateWithSnapshot);
     }
   }
 
