@@ -1,7 +1,6 @@
 export type Store<TState extends object, TActions extends object> = {
   get: () => TState;
   set: (stateModifier: StateModifier<TState>) => TState;
-  reset: () => TState;
   subscribe: (listener: () => void) => () => void;
   listeners: (() => void)[];
   actions: TActions;
@@ -138,12 +137,6 @@ export const createStore = <
     return state;
   };
 
-  const reset = () => {
-    state = initialState;
-    dispatch();
-    return state;
-  };
-
   const subscribe = (listener: () => void) => {
     if (listeners.length === 0) {
       dispatchEvent("attach");
@@ -157,7 +150,8 @@ export const createStore = <
         dispatchEvent("detach");
 
         if (resetOnDetach) {
-          reset();
+          state = initialState;
+          dispatch();
         }
       }
     };
@@ -170,7 +164,6 @@ export const createStore = <
   return {
     get,
     set,
-    reset,
     subscribe,
     listeners,
     actions,

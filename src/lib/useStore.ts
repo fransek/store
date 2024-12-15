@@ -5,7 +5,6 @@ export type BoundStore<TState extends object, TActions extends object> = {
   state: TState;
   actions: TActions;
   set: (stateModifier: StateModifier<TState>) => TState;
-  reset: () => TState;
 };
 
 /**
@@ -13,15 +12,14 @@ export type BoundStore<TState extends object, TActions extends object> = {
  *
  * @param {Store<TState, TActions>} store - The store created with `createStore`.
  *
- * @returns {BoundStore<TState, TActions>} An object containing the current state, actions, set, and reset functions.
+ * @returns {BoundStore<TState, TActions>} An object containing the current state, actions, and set function.
  */
 export const useStore = <TState extends object, TActions extends object>({
   get,
   set,
-  reset,
   subscribe,
   actions,
 }: Store<TState, TActions>): BoundStore<TState, TActions> => {
   const state = useSyncExternalStore(subscribe, get, get);
-  return { state, actions, set, reset };
+  return { state, actions, set };
 };

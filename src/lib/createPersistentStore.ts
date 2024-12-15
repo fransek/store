@@ -93,7 +93,5 @@ export const createPersistentStore = <
     window.removeEventListener("focus", updateState);
   });
 
-  const reset = () => store.set(initialState);
-
-  return { ...store, reset };
+  return store;
 };

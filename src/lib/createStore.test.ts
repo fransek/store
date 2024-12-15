@@ -15,14 +15,6 @@ describe("createStore", () => {
     expect(store.get().count).toBe(1);
   });
 
-  it("should reset the state to initial state", () => {
-    const initialState = { count: 0 };
-    const store = createStore(initialState);
-    store.set({ count: 1 });
-    store.reset();
-    expect(store.get()).toEqual(initialState);
-  });
-
   it("should notify subscribers on state change", () => {
     const initialState = { count: 0 };
     const store = createStore(initialState);
