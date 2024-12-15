@@ -99,7 +99,7 @@ const ChildComponent = () => {
 
 ## Actions are optional
 
-You can use the `set` and `reset` functions to update the state directly.
+You can use the `set` function to update the state directly.
 
 ```tsx
 import { createStore, useStore } from "fransek-store";
@@ -110,7 +110,6 @@ function Counter() {
   const {
     state: { count },
     set,
-    reset,
   } = useStore(store);
 
   return (
@@ -122,7 +121,6 @@ function Counter() {
       <button onClick={() => set(({ count }) => ({ count: count - 1 }))}>
         +
       </button>
-      <button onClick={reset}>Reset</button>
     </div>
   );
 }

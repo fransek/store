@@ -1,10 +1,25 @@
 export type Store<TState extends object, TActions extends object> = {
   get: () => TState;
   set: (stateModifier: StateModifier<TState>) => TState;
-  reset: () => TState;
   subscribe: (listener: () => void) => () => void;
+  listeners: (() => void)[];
   actions: TActions;
+  addEventListener: (
+    event: StoreEvent,
+    listener: StoreListener<TState>,
+  ) => void;
+  removeEventListener: (
+    event: StoreEvent,
+    listener: StoreListener<TState>,
+  ) => void;
 };
+
+export type StoreEvent = "attach" | "detach" | "change" | "load";
+
+export type StoreListener<TState extends object> = (
+  state: TState,
+  set: SetState<TState>,
+) => void;
 
 export type SetState<TState extends object> = (
   stateModifier: StateModifier<TState>,
@@ -23,13 +38,13 @@ export type DefineActions<TState extends object, TActions> = (
 
 export type StoreOptions<TState extends object> = {
   /** Invoked when the store is created. */
-  onLoad?: (state: TState, set: SetState<TState>) => void;
+  onLoad?: StoreListener<TState>;
   /** Invoked when the store is subscribed to. */
-  onAttach?: (state: TState, set: SetState<TState>) => void;
+  onAttach?: StoreListener<TState>;
   /** Invoked when the store is unsubscribed from. */
-  onDetach?: (state: TState, set: SetState<TState>) => void;
+  onDetach?: StoreListener<TState>;
   /** Invoked whenever the state changes. */
-  onStateChange?: (state: TState, set: SetState<TState>) => void;
+  onStateChange?: StoreListener<TState>;
   /** Whether to reset the state to the initial state when the store is detached. */
   resetOnDetach?: boolean;
 };
@@ -60,9 +75,49 @@ export const createStore = <
   let state = initialState;
   let listeners: (() => void)[] = [];
 
-  const get: GetState<TState> = () => state;
+  const eventListeners: Record<StoreEvent, StoreListener<TState>[]> = {
+    load: [],
+    attach: [],
+    detach: [],
+    change: [],
+  };
 
-  const setSilently: SetState<TState> = (stateModifier) => {
+  const addEventListener = (
+    event: StoreEvent,
+    listener: StoreListener<TState>,
+  ) => {
+    eventListeners[event].push(listener);
+  };
+
+  const removeEventListener = (
+    event: StoreEvent,
+    listener: StoreListener<TState>,
+  ) => {
+    eventListeners[event] = eventListeners[event].filter((l) => l !== listener);
+  };
+
+  const dispatchEvent = (event: StoreEvent, silent = false) => {
+    eventListeners[event].forEach((listener) =>
+      listener(state, silent ? setSilently : set),
+    );
+  };
+
+  if (onLoad) {
+    addEventListener("load", onLoad);
+  }
+  if (onAttach) {
+    addEventListener("attach", onAttach);
+  }
+  if (onDetach) {
+    addEventListener("detach", onDetach);
+  }
+  if (onStateChange) {
+    addEventListener("change", onStateChange);
+  }
+
+  const get = () => state;
+
+  const setSilently = (stateModifier: StateModifier<TState>) => {
     const newState =
       typeof stateModifier === "function"
         ? stateModifier(state)
@@ -72,37 +127,31 @@ export const createStore = <
   };
 
   const dispatch = () => {
-    onStateChange?.(state, setSilently);
+    dispatchEvent("change", true);
     listeners.forEach((listener) => listener());
   };
 
-  const set: SetState<TState> = (stateModifier: StateModifier<TState>) => {
+  const set = (stateModifier: StateModifier<TState>) => {
     setSilently(stateModifier);
-    dispatch();
-    return state;
-  };
-
-  const reset = () => {
-    state = initialState;
     dispatch();
     return state;
   };
 
   const subscribe = (listener: () => void) => {
     if (listeners.length === 0) {
-      onAttach?.(state, set);
+      dispatchEvent("attach");
     }
 
     listeners.push(listener);
-
     return () => {
       listeners = listeners.filter((l) => l !== listener);
 
       if (listeners.length === 0) {
-        onDetach?.(state, set);
+        dispatchEvent("detach");
 
         if (resetOnDetach) {
-          reset();
+          state = initialState;
+          dispatch();
         }
       }
     };
@@ -110,7 +159,15 @@ export const createStore = <
 
   const actions = defineActions ? defineActions(set, get) : ({} as TActions);
 
-  onLoad?.(state, set);
+  dispatchEvent("load");
 
-  return { get, set, reset, subscribe, actions };
+  return {
+    get,
+    set,
+    subscribe,
+    listeners,
+    actions,
+    addEventListener,
+    removeEventListener,
+  };
 };
