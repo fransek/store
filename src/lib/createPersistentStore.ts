@@ -16,20 +16,6 @@ const getStorage = (storage: StorageType) => {
   }
 };
 
-const registerStoreListener = (storeKey: string, listener: () => void) => {
-  if (!window.__store_listeners) {
-    window.__store_listeners = new Set();
-  }
-
-  window.__store_listeners.add(storeKey);
-  window.addEventListener("focus", listener);
-};
-
-const unregisterStoreListener = (storeKey: string, listener: () => void) => {
-  window.__store_listeners?.delete(storeKey);
-  window.removeEventListener("focus", listener);
-};
-
 interface PersistentStoreOptions<TState extends object>
   extends StoreOptions<TState> {
   /** The type of storage to use ("local" or "session"). Defaults to "local". */
@@ -58,12 +44,9 @@ export const createPersistentStore = <
   { storage = "local", ...options }: PersistentStoreOptions<TState> = {},
 ): Store<TState, TActions> => {
   const selectedStorage = getStorage(storage);
-  const isBrowser = typeof window !== "undefined";
 
   const initialStateKey = `store_init_${key}`;
-  const initialStateSnapshot = isBrowser
-    ? selectedStorage?.getItem(initialStateKey)
-    : null;
+  const initialStateSnapshot = selectedStorage?.getItem(initialStateKey);
   const initialStateString = superjson.stringify(initialState);
 
   const stateKey = `store_${key}`;
@@ -73,42 +56,42 @@ export const createPersistentStore = <
     selectedStorage?.removeItem(stateKey);
   }
 
-  const stateString = isBrowser ? selectedStorage?.getItem(stateKey) : null;
-  const state = stateString
-    ? superjson.parse<TState>(stateString)
+  const stateSnapshot = selectedStorage?.getItem(stateKey);
+  const state = stateSnapshot
+    ? superjson.parse<TState>(stateSnapshot)
     : initialState;
   const store = createStore(state, defineActions, options);
 
-  if (isBrowser) {
-    const updateSnapshot = (newState: TState) => {
-      const currentSnapshot = selectedStorage?.getItem(stateKey);
-      const newSnapshot = superjson.stringify(newState);
+  const updateSnapshot = (newState: TState) => {
+    const currentSnapshot = selectedStorage?.getItem(stateKey);
+    const newSnapshot = superjson.stringify(newState);
 
-      if (newSnapshot !== currentSnapshot) {
-        selectedStorage?.setItem(stateKey, newSnapshot);
-      }
-    };
+    if (newSnapshot !== currentSnapshot) {
+      selectedStorage?.setItem(stateKey, newSnapshot);
+    }
+  };
 
-    const updateState = () => {
-      const currentSnapshot = selectedStorage?.getItem(stateKey);
-      const currentState = superjson.stringify(store.get());
+  const updateState = () => {
+    const currentSnapshot = selectedStorage?.getItem(stateKey);
 
-      if (currentSnapshot && currentSnapshot !== currentState) {
-        store.set(superjson.parse<TState>(currentSnapshot));
-      }
-    };
+    if (
+      currentSnapshot &&
+      currentSnapshot !== superjson.stringify(store.get())
+    ) {
+      store.set(superjson.parse<TState>(currentSnapshot));
+    }
+  };
 
-    store.addEventListener("attach", () => {
-      updateState();
-      store.addEventListener("change", updateSnapshot);
-      registerStoreListener(key, updateState);
-    });
+  store.addEventListener("attach", () => {
+    updateState();
+    store.addEventListener("change", updateSnapshot);
+    window.addEventListener("focus", updateState);
+  });
 
-    store.addEventListener("detach", () => {
-      store.removeEventListener("change", updateSnapshot);
-      unregisterStoreListener(key, updateState);
-    });
-  }
+  store.addEventListener("detach", () => {
+    store.removeEventListener("change", updateSnapshot);
+    window.removeEventListener("focus", updateState);
+  });
 
   const reset = () => store.set(initialState);
 
