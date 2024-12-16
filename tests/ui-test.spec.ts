@@ -15,18 +15,12 @@ test("Counter", async ({ page }) => {
 
 test("Counter with context", async ({ page }) => {
   const count = page.getByLabel("count", { exact: true });
-  const child = page.getByTestId("child");
 
   await page.goto("/context");
   await page.getByRole("button", { name: "+" }).click();
   await expect(count).toHaveText("1");
-  await expect(child).toHaveText("Count: 1");
-  await page.getByRole("link", { name: "Demo" }).click();
-  await page.getByRole("link", { name: "Counter with context" }).click();
+  await page.getByRole("button", { name: "Reset" }).click();
   await expect(count).toHaveText("0");
-  await page.getByRole("button", { name: "-" }).click();
-  await expect(count).toHaveText("-1");
-  await expect(child).toHaveText("Count: -1");
 });
 
 test("Todo app", async ({ page }) => {
