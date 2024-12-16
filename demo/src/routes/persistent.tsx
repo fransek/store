@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { createPersistentStore, useStore } from "fransek-store";
 
 export const Route = createFileRoute("/persistent")({
@@ -27,10 +27,15 @@ function RouteComponent() {
   } = useStore(store);
 
   return (
-    <div className="flex gap-4 items-center">
-      <button onClick={decrement}>-</button>
-      <div aria-label="count">{count}</div>
-      <button onClick={increment}>+</button>
+    <div>
+      <div className="flex gap-4 items-center">
+        <button onClick={decrement}>-</button>
+        <div aria-label="count">{count}</div>
+        <button onClick={increment}>+</button>
+      </div>
+      <Link target="_blank" href="/persistent">
+        Duplicate this tab
+      </Link>
     </div>
   );
 }

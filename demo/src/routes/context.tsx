@@ -19,6 +19,7 @@ const CounterStoreContext = createStoreContext(
       (set) => ({
         increment: () => set((state) => ({ count: state.count + 1 })),
         decrement: () => set((state) => ({ count: state.count - 1 })),
+        reset: () => set({ count: 0 }),
       }),
       { resetOnDetach: true },
     ),
@@ -36,29 +37,21 @@ function RouteComponent() {
   return (
     // Provide the store to the context
     <CounterStoreContext.Provider value={store}>
-      <h3 className="font-bold">Parent Component</h3>
       <div className="flex gap-4 items-center mb-4">
         <button onClick={decrement}>-</button>
         <div aria-label="count">{count}</div>
         <button onClick={increment}>+</button>
       </div>
-      <ChildComponent />
+      <ResetButton />
     </CounterStoreContext.Provider>
   );
 }
 
-const ChildComponent = () => {
+const ResetButton = () => {
   // Access the store from the context
   const {
-    state: { count },
+    actions: { reset },
   } = useStoreContext(CounterStoreContext);
 
-  return (
-    <div>
-      <h3 className="font-bold">Child Component</h3>
-      <div className="flex gap-4 items-center">
-        <div data-testid="child">Count: {count}</div>
-      </div>
-    </div>
-  );
+  return <button onClick={reset}>Reset</button>;
 };

@@ -3,19 +3,6 @@ import { createStore, DefineActions, Store, StoreOptions } from "./createStore";
 
 type StorageType = "local" | "session";
 
-const getStorage = (storage: StorageType) => {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  switch (storage) {
-    case "local":
-      return localStorage;
-    case "session":
-      return sessionStorage;
-  }
-};
-
 interface PersistentStoreOptions<TState extends object>
   extends StoreOptions<TState> {
   /** The type of storage to use ("local" or "session"). Defaults to "local". */
@@ -41,38 +28,39 @@ export const createPersistentStore = <
   key: string,
   initialState: TState,
   defineActions: DefineActions<TState, TActions> | null = null,
-  { storage = "local", ...options }: PersistentStoreOptions<TState> = {},
+  {
+    storage: storageType = "local",
+    ...options
+  }: PersistentStoreOptions<TState> = {},
 ): Store<TState, TActions> => {
-  const selectedStorage = getStorage(storage);
+  const store = createStore(initialState, defineActions, options);
 
-  const initialStateKey = `store_init_${key}`;
-  const initialStateSnapshot = selectedStorage?.getItem(initialStateKey);
-  const initialStateString = superjson.stringify(initialState);
-
-  const stateKey = `store_${key}`;
-
-  if (initialStateSnapshot !== initialStateString) {
-    selectedStorage?.setItem(initialStateKey, initialStateString);
-    selectedStorage?.removeItem(stateKey);
+  if (typeof window === "undefined") {
+    return store;
   }
 
-  const stateSnapshot = selectedStorage?.getItem(stateKey);
-  const state = stateSnapshot
-    ? superjson.parse<TState>(stateSnapshot)
-    : initialState;
-  const store = createStore(state, defineActions, options);
+  const storage = storageType === "local" ? localStorage : sessionStorage;
+  const stateKey = `store_${key}`;
+  const initialStateKey = `init_${key}`;
+  const initialStateSnapshot = storage?.getItem(initialStateKey);
+  const initialStateString = superjson.stringify(initialState);
+
+  if (initialStateSnapshot !== initialStateString) {
+    storage?.setItem(initialStateKey, initialStateString);
+    storage?.removeItem(stateKey);
+  }
 
   const updateSnapshot = (newState: TState) => {
-    const currentSnapshot = selectedStorage?.getItem(stateKey);
+    const currentSnapshot = storage?.getItem(stateKey);
     const newSnapshot = superjson.stringify(newState);
 
     if (newSnapshot !== currentSnapshot) {
-      selectedStorage?.setItem(stateKey, newSnapshot);
+      storage?.setItem(stateKey, newSnapshot);
     }
   };
 
   const updateState = () => {
-    const currentSnapshot = selectedStorage?.getItem(stateKey);
+    const currentSnapshot = storage?.getItem(stateKey);
 
     if (
       currentSnapshot &&
