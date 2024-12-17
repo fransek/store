@@ -1,4 +1,3 @@
-import superjson from "superjson";
 import { createStore, DefineActions, Store, StoreOptions } from "./createStore";
 
 type StorageType = "local" | "session";
@@ -7,12 +6,16 @@ interface PersistentStoreOptions<TState extends object>
   extends StoreOptions<TState> {
   /** The type of storage to use ("local" or "session"). Defaults to "local". */
   storage?: StorageType;
+  /** The serializer to use for storing the state. Defaults to JSON. */
+  serializer?: {
+    stringify: (value: TState) => string;
+    parse: (value: string) => TState;
+  };
 }
-
 /**
  * Creates a store that persists its state in local or session storage.
  * Defaults to local storage but this can be changed in the options.
- * (The state must be superjson serializable. https://github.com/flightcontrolhq/superjson)
+ * (The state must be JSON serializable)
  *
  * @param {string} key - A unique key to identify the store in storage.
  * @param {TState} initialState - The initial state of the store.
@@ -29,7 +32,8 @@ export const createPersistentStore = <
   initialState: TState,
   defineActions: DefineActions<TState, TActions> | null = null,
   {
-    storage: storageType = "local",
+    storage: _storage = "local",
+    serializer = JSON,
     ...options
   }: PersistentStoreOptions<TState> = {},
 ): Store<TState, TActions> => {
@@ -39,11 +43,11 @@ export const createPersistentStore = <
     return store;
   }
 
-  const storage = storageType === "local" ? localStorage : sessionStorage;
+  const storage = _storage === "local" ? localStorage : sessionStorage;
   const stateKey = `store_${key}`;
   const initialStateKey = `init_${key}`;
   const initialStateSnapshot = storage?.getItem(initialStateKey);
-  const initialStateString = superjson.stringify(initialState);
+  const initialStateString = serializer.stringify(initialState);
 
   if (initialStateSnapshot !== initialStateString) {
     storage?.setItem(initialStateKey, initialStateString);
@@ -52,7 +56,7 @@ export const createPersistentStore = <
 
   const updateSnapshot = (newState: TState) => {
     const currentSnapshot = storage?.getItem(stateKey);
-    const newSnapshot = superjson.stringify(newState);
+    const newSnapshot = serializer.stringify(newState);
 
     if (newSnapshot !== currentSnapshot) {
       storage?.setItem(stateKey, newSnapshot);
@@ -64,9 +68,9 @@ export const createPersistentStore = <
 
     if (
       currentSnapshot &&
-      currentSnapshot !== superjson.stringify(store.get())
+      currentSnapshot !== serializer.stringify(store.get())
     ) {
-      store.set(superjson.parse<TState>(currentSnapshot));
+      store.set(serializer.parse(currentSnapshot));
     }
   };
 
