@@ -1,13 +1,18 @@
 export type Store<TState extends object, TActions extends object> = {
+  /** Returns the current state of the store. */
   get: () => TState;
+  /** Sets the state of the store. */
   set: (stateModifier: StateModifier<TState>) => TState;
+  /** Subscribes to changes in the state of the store. Returns an unsubscribe function. */
   subscribe: (listener: () => void) => () => void;
-  listeners: (() => void)[];
+  /** Actions that can modify the state of the store. */
   actions: TActions;
+  /** Adds an event listener to the store. */
   addEventListener: (
     event: StoreEvent,
     listener: StoreListener<TState>,
   ) => void;
+  /** Removes an event listener from the store. */
   removeEventListener: (
     event: StoreEvent,
     listener: StoreListener<TState>,
@@ -165,7 +170,6 @@ export const createStore = <
     get,
     set,
     subscribe,
-    listeners,
     actions,
     addEventListener,
     removeEventListener,
