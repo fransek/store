@@ -11,8 +11,27 @@ export type BoundStore<TState extends object, TActions extends object> = {
  * Custom hook to bind a store to a component.
  *
  * @param {Store<TState, TActions>} store - The store created with `createStore`.
- *
  * @returns {BoundStore<TState, TActions>} An object containing the current state, actions, and set function.
+ *
+ * @example
+ * import { useStore } from "fransek-store";
+ * import { store } from "./store";
+ *
+ * function Counter() {
+ *   const {
+ *     state: { count },
+ *     actions: { increment, decrement, reset },
+ *   } = useStore(store);
+ *
+ *   return (
+ *     <div>
+ *       <div>{count}</div>
+ *       <button onClick={decrement}>-</button>
+ *       <button onClick={increment}>+</button>
+ *       <button onClick={reset}>Reset</button>
+ *     </div>
+ *   );
+ * }
  */
 export const useStore = <TState extends object, TActions extends object>({
   get,

@@ -15,6 +15,35 @@ export type StoreContext<
  *
  * @param instantiate - A function that returns a new store instance.
  * @returns A store context object with the given instantiation function.
+ *
+ * @example
+ * import { createStore, createStoreContext } from "fransek-store";
+ * import { useMemo } from "react";
+ *
+ * const StoreContext = createStoreContext((initialCount: number) =>
+ *   createStore({ count: initialCount }, (set) => ({
+ *     increment: () => set((state) => ({ count: state.count + 1 })),
+ *     decrement: () => set((state) => ({ count: state.count - 1 })),
+ *     reset: () => set({ count: 0 }),
+ *   })),
+ * );
+ *
+ * function StoreProvider({
+ *   children,
+ *   initialCount,
+ * }: {
+ *   children: React.ReactNode;
+ *   initialCount: number;
+ * }) {
+ *   const store = useMemo(
+ *     () => StoreContext.instantiate(initialCount),
+ *     [initialCount],
+ *   );
+ *
+ *   return (
+ *     <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
+ *   );
+ * }
  */
 export const createStoreContext = <
   TArgs extends unknown[],

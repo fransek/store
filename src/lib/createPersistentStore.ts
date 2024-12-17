@@ -1,17 +1,17 @@
 import { createStore, DefineActions, Store, StoreOptions } from "./createStore";
 
-type StorageType = "local" | "session";
+export type StorageType = "local" | "session";
 
-interface PersistentStoreOptions<TState extends object>
-  extends StoreOptions<TState> {
-  /** The type of storage to use ("local" or "session"). Defaults to "local". */
-  storage?: StorageType;
-  /** The serializer to use for storing the state. Defaults to JSON. */
-  serializer?: {
-    stringify: (value: TState) => string;
-    parse: (value: string) => TState;
+export type PersistentStoreOptions<TState extends object> =
+  StoreOptions<TState> & {
+    /** The type of storage to use ("local" or "session"). Defaults to "local". */
+    storage?: StorageType;
+    /** The serializer to use for storing the state. Defaults to JSON. */
+    serializer?: {
+      stringify: (value: TState) => string;
+      parse: (value: string) => TState;
+    };
   };
-}
 /**
  * Creates a store that persists its state in local or session storage.
  * Defaults to local storage but this can be changed in the options.
@@ -23,6 +23,15 @@ interface PersistentStoreOptions<TState extends object>
  * @param {PersistentStoreOptions<TState>} [options={}] - Additional options for the persistent store.
  *
  * @returns {Store<TState, TActions>} The created store.
+ *
+ * @example
+ * import { createPersistentStore } from "fransek-store";
+ *
+ * const store = createPersistentStore("count", { count: 0 }, (set) => ({
+ *   increment: () => set((state) => ({ count: state.count + 1 })),
+ *   decrement: () => set((state) => ({ count: state.count - 1 })),
+ *   reset: () => set({ count: 0 }),
+ * }));
  */
 export const createPersistentStore = <
   TState extends object,

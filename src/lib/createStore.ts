@@ -62,6 +62,15 @@ export type StoreOptions<TState extends object> = {
  * @param {StoreOptions<TState>} [options] - Additional options for the store.
  *
  * @returns {Store<TState, TActions>} The created store with state management methods.
+ *
+ * @example
+ * import { createStore } from "fransek-store";
+ *
+ * const store = createStore({ count: 0 }, (set) => ({
+ *   increment: () => set((state) => ({ count: state.count + 1 })),
+ *   decrement: () => set((state) => ({ count: state.count - 1 })),
+ *   reset: () => set({ count: 0 }),
+ * }));
  */
 export const createStore = <
   TState extends object,

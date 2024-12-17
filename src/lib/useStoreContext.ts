@@ -7,6 +7,26 @@ import { BoundStore, useStore } from "./useStore";
  *
  * @param {StoreContext<TArgs, TState, TActions>} storeContext - The context of the store.
  * @returns {BoundStore<TState, TActions>} The store instance.
+ *
+ * @example
+ * import { useStoreContext } from "fransek-store";
+ * import { StoreContext } from "./store";
+ *
+ * function Counter() {
+ *   const {
+ *     state: { count },
+ *     actions: { increment, decrement, reset },
+ *   } = useStoreContext(StoreContext);
+ *
+ *   return (
+ *     <div>
+ *       <div>{count}</div>
+ *       <button onClick={decrement}>-</button>
+ *       <button onClick={increment}>+</button>
+ *       <button onClick={reset}>Reset</button>
+ *     </div>
+ *   );
+ * }
  */
 export const useStoreContext = <
   TArgs extends unknown[],
