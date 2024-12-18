@@ -1,6 +1,6 @@
 {
   "name": "@fransek/statekit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Frans Ekman <fransedvinekman@gmail.com>",
   "license": "MIT",
   "description": "A tiny state management library for React.",
@@ -11,6 +11,7 @@
     "reducer",
     "redux"
   ],
+  "homepage": "https://fransek.github.io/statekit/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fransek/statekit"
