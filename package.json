@@ -13,10 +13,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fransek/store"
+    "url": "git+https://github.com/fransek/statekit"
   },
   "bugs": {
-    "url": "https://github.com/fransek/store/issues"
+    "url": "https://github.com/fransek/statekit/issues"
   },
   "files": [
     "dist"
