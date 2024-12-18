@@ -12,12 +12,13 @@ export type PersistentStoreOptions<TState extends object> =
       parse: (value: string) => TState;
     };
   };
+
 /**
  * Creates a store that persists its state in local or session storage.
  * Defaults to local storage but this can be changed in the options.
  *
  * **Note:** The state needs to be serializable by whatever serializer you use. (JSON by default)
- * If you need something more versatile I would recommend a library like [superjson](https://github.com/flightcontrolhq/superjson).
+ * If you need something more versatile I would recommend using a library like [superjson](https://github.com/flightcontrolhq/superjson).
  *
  * @param {string} key - A unique key to identify the store in storage.
  * @param {TState} initialState - The initial state of the store.

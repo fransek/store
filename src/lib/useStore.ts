@@ -8,7 +8,7 @@ export type BoundStore<TState extends object, TActions extends object> = {
 };
 
 /**
- * Custom hook to bind a store to a component.
+ * A hook used to access a store created with `createStore` and bind it to a component.
  *
  * @param {Store<TState, TActions>} store - The store created with `createStore`.
  * @returns {BoundStore<TState, TActions>} An object containing the current state, actions, and set function.

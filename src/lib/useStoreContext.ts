@@ -3,7 +3,7 @@ import { StoreContext } from "./createStoreContext";
 import { BoundStore, useStore } from "./useStore";
 
 /**
- * Custom hook to access the store context.
+ * A hook used to access a store context created with `createStoreContext`.
  *
  * @param {StoreContext<TArgs, TState, TActions>} storeContext - The context of the store.
  * @returns {BoundStore<TState, TActions>} The store instance.
