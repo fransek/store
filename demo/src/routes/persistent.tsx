@@ -16,6 +16,7 @@ const store = createPersistentStore(
   }),
   {
     // storage: "session",
+    // serializer: superjson,
   },
 );
 

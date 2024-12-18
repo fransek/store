@@ -1,6 +1,6 @@
-import superjson from "superjson";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPersistentStore } from "./createPersistentStore";
+import superjson from "superjson";
 
 describe("createPersistentStore", () => {
   const key = "test";
@@ -25,12 +25,12 @@ describe("createPersistentStore", () => {
     store.subscribe(listener);
     store.set({ count: 1 });
     const storedState = localStorage.getItem(storeKey);
-    expect(storedState).toBe(superjson.stringify({ count: 1 }));
+    expect(storedState).toBe(JSON.stringify({ count: 1 }));
   });
 
   it("should load state from localStorage if available", () => {
-    localStorage.setItem(initKey, superjson.stringify({ count: 0 }));
-    localStorage.setItem(storeKey, superjson.stringify({ count: 1 }));
+    localStorage.setItem(initKey, JSON.stringify({ count: 0 }));
+    localStorage.setItem(storeKey, JSON.stringify({ count: 1 }));
     const store = createPersistentStore(key, initialState);
     expect(store.get()).toEqual({ count: 0 });
     store.subscribe(listener);
@@ -38,8 +38,8 @@ describe("createPersistentStore", () => {
   });
 
   it("should load state from sessionStorage if available", () => {
-    sessionStorage.setItem(initKey, superjson.stringify({ count: 0 }));
-    sessionStorage.setItem(storeKey, superjson.stringify({ count: 2 }));
+    sessionStorage.setItem(initKey, JSON.stringify({ count: 0 }));
+    sessionStorage.setItem(storeKey, JSON.stringify({ count: 2 }));
     const store = createPersistentStore(key, initialState, null, {
       storage: "session",
     });
@@ -51,7 +51,7 @@ describe("createPersistentStore", () => {
     const store = createPersistentStore(key, initialState);
     store.subscribe(listener);
     store.set({ count: 1 });
-    localStorage.setItem(storeKey, superjson.stringify({ count: 2 }));
+    localStorage.setItem(storeKey, JSON.stringify({ count: 2 }));
     window.dispatchEvent(new Event("focus"));
     expect(store.get()).toEqual({ count: 2 });
   });
@@ -73,5 +73,13 @@ describe("createPersistentStore", () => {
     expect(addStoreListenerSpy).toHaveBeenCalledOnce();
     expect(removeEventListenerSpy).toHaveBeenCalledOnce();
     expect(removeStoreListenerSpy).toHaveBeenCalledOnce();
+  });
+
+  it("should use custom serializer", () => {
+    createPersistentStore(key, initialState, null, {
+      serializer: superjson,
+    });
+    const initState = localStorage.getItem(initKey);
+    expect(initState).toBe(superjson.stringify(initialState));
   });
 });

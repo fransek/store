@@ -1,13 +1,18 @@
 export type Store<TState extends object, TActions extends object> = {
+  /** Returns the current state of the store. */
   get: () => TState;
+  /** Sets the state of the store. */
   set: (stateModifier: StateModifier<TState>) => TState;
+  /** Subscribes to changes in the state of the store. Returns an unsubscribe function. */
   subscribe: (listener: () => void) => () => void;
-  listeners: (() => void)[];
+  /** Actions that can modify the state of the store. */
   actions: TActions;
+  /** Adds an event listener to the store. */
   addEventListener: (
     event: StoreEvent,
     listener: StoreListener<TState>,
   ) => void;
+  /** Removes an event listener from the store. */
   removeEventListener: (
     event: StoreEvent,
     listener: StoreListener<TState>,
@@ -50,13 +55,22 @@ export type StoreOptions<TState extends object> = {
 };
 
 /**
- * Creates a store with state management capabilities.
+ * Creates a store with an initial state and actions that can modify the state.
  *
  * @param {TState} initialState - The initial state of the store.
  * @param {DefineActions<TState, TActions> | null} [defineActions=null] - A function that defines actions that can modify the state.
  * @param {StoreOptions<TState>} [options] - Additional options for the store.
  *
  * @returns {Store<TState, TActions>} The created store with state management methods.
+ *
+ * @example
+ * import { createStore } from "fransek-store";
+ *
+ * const store = createStore({ count: 0 }, (set) => ({
+ *   increment: () => set((state) => ({ count: state.count + 1 })),
+ *   decrement: () => set((state) => ({ count: state.count - 1 })),
+ *   reset: () => set({ count: 0 }),
+ * }));
  */
 export const createStore = <
   TState extends object,
@@ -165,7 +179,6 @@ export const createStore = <
     get,
     set,
     subscribe,
-    listeners,
     actions,
     addEventListener,
     removeEventListener,
