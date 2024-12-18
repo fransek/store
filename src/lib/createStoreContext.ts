@@ -18,7 +18,7 @@ export type StoreContext<
  * @returns A store context object with the given instantiation function.
  *
  * @example
- * import { createStore, createStoreContext } from "statekit";
+ * import { createStore, createStoreContext } from "@fransek/statekit";
  * import { useMemo } from "react";
  *
  * const StoreContext = createStoreContext((initialCount: number) =>

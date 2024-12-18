@@ -4,7 +4,7 @@ import {
   createStoreContext,
   useStore,
   useStoreContext,
-} from "statekit";
+} from "@fransek/statekit";
 import { useRef } from "react";
 
 export const Route = createFileRoute("/context")({
