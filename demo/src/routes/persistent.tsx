@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { createPersistentStore, useStore } from "statekit";
+import { createPersistentStore, useStore } from "@fransek/statekit";
 
 export const Route = createFileRoute("/persistent")({
   component: RouteComponent,

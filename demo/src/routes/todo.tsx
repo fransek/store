@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createStore, useStore } from "statekit";
+import { createStore, useStore } from "@fransek/statekit";
 
 export const Route = createFileRoute("/todo")({
   component: RouteComponent,
