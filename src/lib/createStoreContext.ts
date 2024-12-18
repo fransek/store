@@ -11,7 +11,8 @@ export type StoreContext<
 };
 
 /**
- * Creates a store context with the given store instantiation function.
+ * Creates a store context with an instantiation function.
+ * Useful if you need to initialize the store with dynamic data like props.
  *
  * @param instantiate - A function that returns a new store instance.
  * @returns A store context object with the given instantiation function.
