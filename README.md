@@ -1,4 +1,4 @@
-# fransek-store
+# Statekit
 
 A tiny state management library for React.
 
@@ -7,13 +7,13 @@ A tiny state management library for React.
 1. Install the package:
 
 ```sh
-npm i fransek-store
+npm i statekit
 ```
 
 2. Create a store:
 
 ```ts
-import { createStore } from "fransek-store";
+import { createStore } from "statekit";
 
 const store = createStore({ count: 0 }, (set) => ({
   increment: () => set((state) => ({ count: state.count + 1 })),
@@ -25,7 +25,7 @@ const store = createStore({ count: 0 }, (set) => ({
 3. Use the store:
 
 ```tsx
-import { useStore } from "fransek-store";
+import { useStore } from "statekit";
 import { store } from "./store";
 
 function Counter() {

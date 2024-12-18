@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createStore, useStore } from "fransek-store";
+import { createStore, useStore } from "statekit";
 
 export const Route = createFileRoute("/counter")({
   component: RouteComponent,

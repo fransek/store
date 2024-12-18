@@ -14,7 +14,7 @@ export type BoundStore<TState extends object, TActions extends object> = {
  * @returns {BoundStore<TState, TActions>} An object containing the current state, actions, and set function.
  *
  * @example
- * import { useStore } from "fransek-store";
+ * import { useStore } from "statekit";
  * import { store } from "./store";
  *
  * function Counter() {
