@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [TanStackRouterVite({}), react()],
   resolve: {
     alias: {
-      "fransek-store": resolve(__dirname, "../src"),
+      statekit: resolve(__dirname, "../src"),
     },
   },
 });

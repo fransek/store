@@ -9,7 +9,7 @@ import { BoundStore, useStore } from "./useStore";
  * @returns {BoundStore<TState, TActions>} The store instance.
  *
  * @example
- * import { useStoreContext } from "fransek-store";
+ * import { useStoreContext } from "statekit";
  * import { StoreContext } from "./store";
  *
  * function Counter() {
