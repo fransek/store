@@ -50,13 +50,14 @@
     "jsdom": "^25.0.1",
     "lint-staged": "^15.2.11",
     "prettier": "^3.4.2",
+    "react": "^19.0.0",
     "superjson": "^2.2.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "@types/react": ">=18.0.0"
+    "@types/react": ">=18.0.0",
+    "react": ">=18.0.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
